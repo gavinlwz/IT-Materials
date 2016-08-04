@@ -1,0 +1,201 @@
+@Gstreamer下视频播放命令
+    http://www.cnblogs.com/general001/articles/2514207.html
+    
+    
+@GStreamer基础教程11——调试工具 
+    http://blog.csdn.net/sakulafly/article/details/21559785
+    
+    GST_DEBUG_DUMP_DOT_DIR
+    
+@playbin2
+http://blog.csdn.net/zwlq1314521/article/details/41519919
+
+playbin2 :gstplaybin2.c gstplaysink.c gstdecodebin2.c
+
+
+@open max配置文件产生
+    omxregister-bellagio
+    
+@
+gst-inspect 
+
+
+@
+http://blog.csdn.net/maeom/article/details/7693520
+
+@命令行调试
+    http://blog.chinaunix.net/uid-26354556-id-2972854.html
+    
+@ ali pipeline & gst-launch命令行方式
+@MP3：
+    gst-launch playbin2 uri=file:///usr/mnt_app/1.mp3
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/MP3-CBR-192kbps-16b-44khz.mp3
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/MP3-CBR-256kbps-16b-44khz.mp3
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/MP3-CBR-320kbps-16b-44khz.mp3
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/MP3-CBR-160kbps-16b-44khz.mp3
+                                                            MP3-CBR-128kbps-44khz.mp3
+                                                            48KHz-96Kbit.mp3
+                                                            48KHz-128Kbit.mp3
+                                                            4.1KHz-96Kbit.mp3
+    
+    gst-launch-0.10 filesrc location= /usr/mnt_app/1.mp3 ! mp3parse ! omx_nmpauddec ! omx_audiosink
+
+@WAV:		
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/100s_44100_16_music.wav
+                                                            100s_44100_16_tone.wav
+                                                            100s_tone_192kHz_32bits.wav
+                                                            614-1.wav
+                                                            Wav-24b-96khz.wav
+                                                            
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/biaobai_s16_2c-2.wav
+    gst-launch-0.10 filesrc location= /usr/mnt_app/1.wav ! wavparse ! omx_nmpauddec ! omx_audiosink
+    
+@OGG:       
+    gst-launch-0.10 playbin2 uri=file:///usr/mnt_app/237/soundbar/ogg1.ogg
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/ogg1.ogg  ! oggdemux !omx_nmpauddec ! omx_audiosink
+    
+@flac ok
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/100s_44100_16_best_music.flac
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/100s_44100_16_best_tone.flac
+                                                            33_02_06_010_7.flac
+                                                            35_02_05_003_MyLove.flac
+                                                            FLAC-16b-44khz.flac
+                                                            
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/44.1KHz.flac ! flacparse !omx_nmpauddec ! omx_audiosink
+    
+     gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/stream/44.1KHz.flac ! flacparse !omx_nmpauddec ! omx_audiosink
+    
+@aac  ok 
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/33_02_06_013_4.AAC_LC_6channels.aac
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/35_02_11_014_AAC_VBR_44.1KHz_ADTS_10.BOm.to.choose.aac
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/aac-abr-q180-192-16b-44khz.aac
+    aac-abr-q340-256-16b-44khz.aac
+    aac-abr-q500-320-16b-44khz.aac
+    aac-abr-q75-128-16b-44khz.aac
+
+@WMA
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/wma-CBR-16b-44khz1.wma
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/WMA-CBR-160kbps-wma16b-44khz.wma
+                                                            wma-CBR-16b-44khz1.wma
+                                                            wma-CBR-16b-44khz3.wma
+                                                            WMA_v2_192kbps_44.1KHz_arkq.wma
+    
+    Not work
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/wma-CBR-16b-44khz.wma  Not work
+    wmaprodec
+    wmadec
+    asfdemux
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/wma-CBR-16b-44khz.wma  !omx_nmpauddec !audioconvert!audioresample!omx_audiosink
+
+@M4A.m4a
+    omxregister-bellagio
+    GST_DEBUG=5 
+    
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/M4A.m4a
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/biaobai.m4a 
+    
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/M4A.m4a  !qtdemux !ffdec_alac! queue ！omx_nmpauddec !omx_audiosink
+    
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/M4A.m4a ! qtdemux name=demux demux.audio_00 ! ffdec_alac! omx_nmpauddec !omx_audiosink
+    
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/M4A.m4a ! qtdemux ! ffdec_alac !queue ! filesink location=/mnt/usb/sda/2016/m4a1.pcm
+    
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/M4A.m4a ! qtdemux ! ffdec_alac !queue !ffenc_adpcm_ima_wav !queue ! omx_nmpauddec !omx_audiosink
+    
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/M4A.m4a ! qtdemux ! ffdec_alac !queue !ffenc_adpcm_ima_wav !queue ! filesink location=/mnt/usb/sda/2016/m4a1.wav
+    
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/M4A.m4a ! qtdemux ! ffdec_alac !alsasink
+    
+    
+    
+     gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/M4A.m4a ! qtdemux ! ffdec_alac !audio/x-raw-int !alsasink
+    
+     gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/biaobai.m4a ! qtdemux name=demux demux.audio_00! ffdec_alac ！audioconvert ! omx_nmpauddec !omx_audiosink
+    
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/biaobai.m4a ! qtdemux ! ffdec_alac !audio/x-raw-int !omx_nmpauddec !omx_audiosink
+    
+    
+    
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/M4A.m4a ! qtdemux ! ffdec_alac !audio/x-raw-int !omx_nmpauddec !omx_audiosink
+    
+    
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/M4A.m4a ! qtdemux ! ffdec_alac !audioconvert !omx_nmpauddec !omx_audiosink
+    
+    
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/M4A.m4a ! qtdemux ! ffdec_alac !audioconvert !audioresample!omx_nmpauddec !omx_audiosink
+    
+    
+   
+ @OGG
+
+    
+    
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/ogg1.ogg  ! oggparse  ! omx_nmpauddec !omx_audiosink
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/OGG-VBR-l4-128kbps-16b-44khz.ogg
+    gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/OGG-VBR-l4-128kbps-16b-44khz.ogg  ! oggparse  ! omx_nmpauddec !omx_audiosink
+    
+@web test    
+    audio:  gst-launch souphttpsrc location=http://mcorp.no/res/bigbuckbunny.webm  ! matroskademux name=d d.audio_00 ! vorbisparse !vorbisdec !audioconvert !audio/x-raw-int !audioresample!omx_nmpauddec !omx_audiosink
+    
+    
+    gst-launch playbin2 uri=http://mcorp.no/res/bigbuckbunny.webm
+    
+    
+    gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/bigbuckbunny.m4v
+    
+    
+    
+    gst-launch souphttpsrc location=http://mcorp.no/res/bigbuckbunny.webm  ! matroskademux name=d d.audio_00 ! vorbisparse ! matroskamux ! filesink location=/mnt/usb/sda/2016/sintel_audio.mka  
+    
+    
+    
+    
+   
+    
+     <source src="http://mcorp.no/res/bigbuckbunny.webm" type="video/webm">
+     
+     
+     gst-launch playbin2 uri="http://mcorp.no/res/bigbuckbunny.m4v"
+     
+     gst-launch playbin2 uri=http://mcorp.no/res/bigbuckbunny.webm
+     
+     
+     <source src="http://mcorp.no/res/bigbuckbunny.m4v" type="video/mp4">
+     
+     
+     
+   static MEDIA_ADECS adec_maps[] = {
+//audio	
+	{MP3, "mp3parse", omx_nmpauddec},
+	{AAC, "aacparse", omx_nmpauddec},
+	{WAV, "wavparse", omx_nmpauddec},
+	{BYE1, NULL, omx_nmpauddec},
+	{VORBIS, vorbisparse, omx_nmpauddec},
+	{FLAC, NULL, omx_nmpauddec},
+	{RA, NULL, omx_nmpauddec},
+	{PCM, NULL, omx_nmpauddec},
+	{AC3, a52parse, omx_nmpauddec},
+	{DTS, NULL, "dtsdec"},
+	{LPCM, dvdlpcmdec, omx_nmpauddec},
+	{PCMRAW, NULL, omx_nmpauddec},
+	{MULAW, NULL, omx_nmpauddec},
+	{APE, NULL, omx_nmpauddec},
+	{ALAC, NULL, omx_nmpauddec},
+	{AMR, NULL, omx_nmpauddec},
+	{EAC3, ac3parse, omx_nmpauddec},
+}
+
+
+analyze_new_pad  
+
+@@aif
+gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/stream/01ethnicpipa86Ebm.aif
+gst-launch playbin2 uri=file:///usr/mnt_app/237/soundbar/stream/tone_432.aif
+gst-launch-0.10 filesrc location=/usr/mnt_app/237/soundbar/stream/01ethnicpipa86Ebm.aif ! aiffparse  !audioconvert !audioresample!omx_nmpauddec !omx_audiosink
+
+
+
+
+file:///usr/mnt_app/237/soundbar/stream/1.mp3
+ 
+ 
