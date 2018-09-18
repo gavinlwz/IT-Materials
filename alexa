@@ -9,3 +9,40 @@ https://www.jianshu.com/p/a04fb4c4ac62
 
 4.Developing Alexa Skills Locally with Node.js: Account Linking Using OAuth
 https://www.bignerdranch.com/blog/developing-alexa-skills-locally-with-nodejs-account-linking-using-oauth/
+
+
+5 Amazon Alexa ECHO Skills 开发入门
+
+目前有这4中 技能类型
+Custom Interaction Model
+Smart Home Skill API
+Flash Briefing Skill API
+Video Skill API
+
+第一个是通用技能，第二种是智能家庭控制用的，第三种是新闻，第四种是带视频的
+
+先讲前两种，相应文章很多，看起来挺复杂，必须要做一遍才能搞明白，
+
+第一种相对其他的来说比较容易，按照这个guide做就行
+做这个选颜色的例子，然后直接在这个基础上修改lambda代码 实现新功能
+https://developer.amazon.com/alexa-skills-kit/alexa-skill-quick-start-tutorial
+
+第二种有点复杂了，一个是需要做Oauth认证，另外就是他的Lambda 数据返回格式比较复杂
+Oauth认证
+https://developer.amazon.com/blogs/alexa/post/Tx4WG410EHXIYQ/five-steps-before-developing-a-smart-home-skill
+这个认证必须要配 否则无法发布智能家庭类型的技能
+
+数据返回格式模板在这里找
+https://github.com/alexa/alexa-smarthome/blob/master/sample_messages/StateReport/StateReport.json
+https://github.com/alexa/alexa-smarthome/wiki/Validation-Schemas
+
+要求的数据类型定义在这个
+https://developer.amazon.com/docs/device-apis/alexa-thermostatcontroller.html
+
+整个的guide看这个
+Build a Working Smart Home Skill in 15 Minutes
+https://github.com/alexa/alexa-smarthome/wiki/Build-a-Working-Smart-Home-Skill-in-15-Minutes
+
+=====================
+https://developer.amazon.com/blogs/post/Tx34M7F8Z8U7U8B/creating-your-first-alexa-smart-home-skill
+https://developer.amazon.com/docs/smarthome/steps-to-build-a-smart-home-skill.html
