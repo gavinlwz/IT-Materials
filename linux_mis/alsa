@@ -1,0 +1,16 @@
+@1
+https://wiki.audacityteam.org/wiki/USB_mic_on_Linux
+Setting default recording device
+Editing ~/.asoundrc and putting this snippet below might work for some:
+
+ pcm.!default {
+         type asym
+         playback.pcm {
+                 type plug
+                 slave.pcm "hw:0,0"
+         }
+         capture.pcm {
+                 type plug
+                 slave.pcm "hw:1,0"
+         } 
+ }
