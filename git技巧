@@ -1,0 +1,11 @@
+ ******git 一个分支完全覆盖另一个分支
+   １，git push origin develop:master -f 
+      就可以把本地的develop分支强制(-f)推送到远程master
+  ２， 
+   git checkout master // 切换到旧的分支 
+   git reset –hard develop // 将本地的旧分支 master 重置成 develop 
+  git push origin master –force // 再推送到远程仓库
+
+***** git push
+ git push的一般形式为 git push <远程主机名> <本地分支名>  <远程分支名>
+ git push pandora_2.0_cmcc_voip pandora_2.0_cmcc_voip
