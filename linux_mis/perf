@@ -1,11 +1,18 @@
-交叉环境下查看
+@@@@@ 交叉环境下查看
 https://blog.csdn.net/tommy1boy/article/details/82756586
 ./perf record -g -e cpu-clock -p 197
  perf report --symfs /home/liuwenzheng/workspace/github/sysroot_unione --objdump=/etc/opt/arm-linux-hf-4.9/bin/arm-linux-objdump
  
  --symfs :指定系统rootfs
  --objdump：指定交叉反编译工具
+ 
+@@@@@简单使用
+   ./perf record -ag
+   ./perf report
 
+perf record -e block:block_rq_issue -ag
+ perf record command was used to trace the block:block_rq_issue probe, which fires when a block device I/O request is issued (disk I/O). Options included -a to trace all CPUs, and -g to capture call graphs (stack traces). Trace data is written to a perf.data file, and tracing ended when Ctrl-C was hit. A summary of the perf.data file was printed using perf report, which builds a tree from the stack traces, coalescing common paths, and showing percentages for each path.
+@@@
 linux performance工具集
 http://www.brendangregg.com/linuxperf.html
 @@@@@
