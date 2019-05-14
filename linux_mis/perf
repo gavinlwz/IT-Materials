@@ -1,0 +1,8 @@
+交叉环境下查看
+https://blog.csdn.net/tommy1boy/article/details/82756586
+./perf record -g -e cpu-clock -p 197
+ perf report --symfs /home/liuwenzheng/workspace/github/sysroot_unione --objdump=/etc/opt/arm-linux-hf-4.9/bin/arm-linux-objdump
+ 
+ --symfs :指定系统rootfs
+ --objdump：指定交叉反编译工具
+
