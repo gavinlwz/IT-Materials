@@ -6,3 +6,40 @@ https://blog.csdn.net/tommy1boy/article/details/82756586
  --symfs :指定系统rootfs
  --objdump：指定交叉反编译工具
 
+linux performance工具集
+http://www.brendangregg.com/linuxperf.html
+
+Tools
+perf_events: perf one-liners, examples, visualizations.
+eBPF tools: eBPF tracing tools and examples with bcc.
+perf-tools: perf analysis tools using ftrace (github).
+bcc: perf analysis tools using eBPF (github).
+ktap: one-liners, examples, and scripts.
+Flame Graphs: using perf, SystemTap, and kta
+
+Here are some kernel CONFIG options for perf_events functionality:
+
+# for perf_events:
+CONFIG_PERF_EVENTS=y
+# for stack traces:
+CONFIG_FRAME_POINTER=y
+# kernel symbols:
+CONFIG_KALLSYMS=y
+# tracepoints:
+CONFIG_TRACEPOINTS=y
+# kernel function trace:
+CONFIG_FTRACE=y
+# kernel-level dynamic tracing:
+CONFIG_KPROBES=y
+CONFIG_KPROBE_EVENTS=y
+# user-level dynamic tracing:
+CONFIG_UPROBES=y
+CONFIG_UPROBE_EVENTS=y
+# full kernel debug info:
+CONFIG_DEBUG_INFO=y
+# kernel lock tracing:
+CONFIG_LOCKDEP=y
+# kernel lock tracing:
+CONFIG_LOCK_STAT=y
+# kernel dynamic tracepoint variables:
+CONFIG_DEBUG_INFO=y
