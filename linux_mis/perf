@@ -10,7 +10,19 @@ linux performance工具集
 http://www.brendangregg.com/linuxperf.html
 @@@@@
     http://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html#perf
-    
+ 
+@@@@example 
+   Generation
+The example flame graph was generated using perf_events and the FlameGraph tools:
+
+# git clone https://github.com/brendangregg/FlameGraph  # or download it from github
+# cd FlameGraph
+# perf record -F 99 -ag -- sleep 60
+# perf script | ./stackcollapse-perf.pl > out.perf-folded
+# cat out.perf-folded | ./flamegraph.pl > perf-kernel.svg
+
+
+@@@@@@
 Tools
 perf_events: perf one-liners, examples, visualizations.
 eBPF tools: eBPF tracing tools and examples with bcc.
