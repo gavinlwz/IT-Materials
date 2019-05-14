@@ -8,7 +8,9 @@ https://blog.csdn.net/tommy1boy/article/details/82756586
 
 linux performance工具集
 http://www.brendangregg.com/linuxperf.html
-
+@@@@@
+    http://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html#perf
+    
 Tools
 perf_events: perf one-liners, examples, visualizations.
 eBPF tools: eBPF tracing tools and examples with bcc.
