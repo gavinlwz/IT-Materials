@@ -1,0 +1,2 @@
+1.gatt 理解
+https://blog.csdn.net/weixin_41572450/article/details/84194337
