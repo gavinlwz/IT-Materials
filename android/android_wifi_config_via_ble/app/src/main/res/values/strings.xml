@@ -1,0 +1,25 @@
+<resources>
+
+    <string name="app_name">BLE-WIFI-CFG</string>
+    
+    <!-- operation steps -->
+    <string name="operation_step_0">Please Select A Ble Device(drop down to refresh)</string>
+
+    <!-- others -->
+    <string name="device_name_unknown_device">Unkonwn Device</string>
+    <string name="device_address">Address</string>
+    <string name="device_signal">Signal</string>
+    
+    <string name="ssid_edit_hint">Please input Ssid</string>
+    <string name="pwd_edit_hint">Please input Password</string>
+    
+    <string name="confirm">Confirm</string>
+    <string name="dialog_title">Wi-Fi Configure</string>
+    <string name="configure_suc">Configure Suc</string>
+    <string name="configure_fail">Configure Fail</string>
+    <string name="configure_timeout">Configure Timeout</string>
+    <string name="configuring">Configuring&#8230;</string>
+    <string name="filter">Filter</string>
+    <string name="scan">Scan</string>
+    <string name="scaning">Scaning&#8230;</string>
+</resources>

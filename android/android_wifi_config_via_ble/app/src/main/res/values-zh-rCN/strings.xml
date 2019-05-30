@@ -1,0 +1,25 @@
+<resources>
+
+    <string name="app_name">BLE WIFI DEMO V0.8.5</string>
+
+    <!-- operation steps -->
+    <string name="operation_step_0">请选择一个蓝牙设备(下拉可刷新)</string>
+
+    <!-- others -->
+    <string name="device_name_unknown_device">未知设备</string>
+    <string name="device_address">地址</string>
+    <string name="device_signal">信号</string>
+    
+    <string name="ssid_edit_hint">请输入Ssid</string>
+    <string name="pwd_edit_hint">请输入密码</string>
+    
+    <string name="confirm">确认</string>
+    <string name="dialog_title">Wi-Fi 配置</string>
+    <string name="configure_suc">配置成功</string>
+    <string name="configure_fail">配置失败</string>
+    <string name="configure_timeout">配置超时</string>
+    <string name="configuring">配置中&#8230;</string>
+    <string name="filter">过滤</string>
+    <string name="scan">扫描</string>
+    <string name="scaning">扫描中&#8230;</string>
+</resources>

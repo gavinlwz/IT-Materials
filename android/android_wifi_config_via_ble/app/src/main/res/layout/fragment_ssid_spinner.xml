@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+<Spinner xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/spn_ssid"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+</Spinner>
+-->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <com.afunx.ble.widget.SpinnerButton
+        android:id="@+id/spn_ssid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start|center_vertical" >
+    </com.afunx.ble.widget.SpinnerButton>
+
+</FrameLayout>
