@@ -1,0 +1,66 @@
+@@@@@ 交叉环境下查看
+https://blog.csdn.net/tommy1boy/article/details/82756586
+./perf record -g -e cpu-clock -p 197
+ perf report --symfs /home/liuwenzheng/workspace/github/sysroot_unione --objdump=/etc/opt/arm-linux-hf-4.9/bin/arm-linux-objdump
+ 
+ --symfs :指定系统rootfs
+ --objdump：指定交叉反编译工具
+ 
+@@@@@简单使用
+   ./perf record -ag
+   ./perf report
+
+perf record -e block:block_rq_issue -ag
+ perf record command was used to trace the block:block_rq_issue probe, which fires when a block device I/O request is issued (disk I/O). Options included -a to trace all CPUs, and -g to capture call graphs (stack traces). Trace data is written to a perf.data file, and tracing ended when Ctrl-C was hit. A summary of the perf.data file was printed using perf report, which builds a tree from the stack traces, coalescing common paths, and showing percentages for each path.
+@@@
+linux performance工具集
+http://www.brendangregg.com/linuxperf.html
+@@@@@
+    http://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html#perf
+ 
+@@@@example 
+   Generation
+The example flame graph was generated using perf_events and the FlameGraph tools:
+
+# git clone https://github.com/brendangregg/FlameGraph  # or download it from github
+# cd FlameGraph
+# perf record -F 99 -ag -- sleep 60
+# perf script | ./stackcollapse-perf.pl > out.perf-folded
+# cat out.perf-folded | ./flamegraph.pl > perf-kernel.svg
+
+
+@@@@@@
+Tools
+perf_events: perf one-liners, examples, visualizations.
+eBPF tools: eBPF tracing tools and examples with bcc.
+perf-tools: perf analysis tools using ftrace (github).
+bcc: perf analysis tools using eBPF (github).
+ktap: one-liners, examples, and scripts.
+Flame Graphs: using perf, SystemTap, and kta
+
+Here are some kernel CONFIG options for perf_events functionality:
+
+# for perf_events:
+CONFIG_PERF_EVENTS=y
+# for stack traces:
+CONFIG_FRAME_POINTER=y
+# kernel symbols:
+CONFIG_KALLSYMS=y
+# tracepoints:
+CONFIG_TRACEPOINTS=y
+# kernel function trace:
+CONFIG_FTRACE=y
+# kernel-level dynamic tracing:
+CONFIG_KPROBES=y
+CONFIG_KPROBE_EVENTS=y
+# user-level dynamic tracing:
+CONFIG_UPROBES=y
+CONFIG_UPROBE_EVENTS=y
+# full kernel debug info:
+CONFIG_DEBUG_INFO=y
+# kernel lock tracing:
+CONFIG_LOCKDEP=y
+# kernel lock tracing:
+CONFIG_LOCK_STAT=y
+# kernel dynamic tracepoint variables:
+CONFIG_DEBUG_INFO=y
