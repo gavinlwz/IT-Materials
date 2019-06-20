@@ -1,3 +1,6 @@
+1.火焰图结束
+https://github.com/gavinlwz/LDD-LinuxDeviceDrivers/tree/master/study/debug
+
 @@@@@ 交叉环境下查看
 https://blog.csdn.net/tommy1boy/article/details/82756586
 ./perf record -g -e cpu-clock -p 197
