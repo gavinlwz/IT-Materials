@@ -1,0 +1,6 @@
+1.
+https://mirrors.edge.kernel.org/pub/linux/kernel/projects/backports/stable/
+
+2. 简介
+Backport是将一个软件的补丁应用到比此补丁所对应的版本更老的版本的行为
+旧kernel版本升级某个驱动，可以考虑用backports
