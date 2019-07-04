@@ -5,6 +5,23 @@
 #include <time.h>
 #include <sys/timeb.h>
 #include <sys/time.h>
+static const char g_hex_char[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+static char * _hex2str(const uint8_t digest[], int bytes,char *buffer,int size) {
+  int i=0;
+  int j=0;
+  char *result = buffer;
+  assert(digest && buffer);
+  buffer[0] = '\0';
+  if(size > (bytes << 1)) {
+    for(i=0;i<bytes;i++) {
+      buffer[j++] = g_hex_char[(digest[i] & 0xF0) >> 4];
+      buffer[j++] = g_hex_char[(digest[i] & 0x0F)];
+    }
+    buffer[j] = '\0';
+  }
+  return result;
+}
 
 
 const char HexChar[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
