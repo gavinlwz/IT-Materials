@@ -1,0 +1,123 @@
+https://linux.die.net/man/3/backtrace_symbols_fd
+
+http://www.top-e.org/jiaoshi/html/?164.html
+在用GDB调试器时可以查看所谓的Backtrace，它包含一系列的函数调用信息，用命令backtrace或bt可以在GDB中查看函数调用栈的信息。有些场合没法使用GDB时，则可以用glibc库函数中的一些相关函数来得到backtrace的信息（在头文件execinfo.h中）：
+
+// 获取将backstrace信息，将地址存到buffer中。
+
+// 参数size指定buffer的最大值，返回值则是backstrace的实际大小
+
+int backtrace (void **buffer, int size)
+
+
+ 
+
+// 根据buffer指定的地址，返回符号信息。参数size指定返回符号信息的大小
+
+char ** backtrace_symbols (void *const *buffer, int size)
+
+
+ 
+
+// 类似backtrace_symbols()函数，但是不需要malloc空间来存放符号信息，
+
+// 而是将结果写到文件描述符fd所代表的文件中
+
+void backtrace_symbols_fd (void *const *buffer, int size, int fd)
+
+使用函数backtrace_symbols()或者backtrace_symbols_fd()时，需要用-rdynamic编译才能得到正确的符号名，否则只能得到偏移地址。
+
+下面的示例代码应用了backtrace()和backtrace_symbols()函数来打印backtrace的信息：
+
+     1  #include <execinfo.h>
+
+     2  #include <stdio.h>
+
+     3  #include <stdlib.h>
+
+     4
+
+     5  /* Obtain a backtrace and print it to stdout. */
+
+     6  void print_trace (void)
+
+     7  {
+
+     8    void *array[10];
+
+     9    size_t size;
+
+    10    char **strings;
+
+    11    size_t i;
+
+    12
+
+    13    size = backtrace (array, 10);
+
+    14    strings = backtrace_symbols (array, size);
+
+    15
+
+    16    printf ("Obtained %zd stack frames./n", size);
+
+    17
+
+    18    for (i = 0; i < size; i++)
+
+    19       printf ("%s/n", strings[i]);
+
+    20
+
+    21    free (strings);
+
+    22  }
+
+    23
+
+    24  /* A dummy function to make the backtrace more interesting. */
+
+    25  void dummy_function (void)
+
+    26  {
+
+    27    print_trace ();
+
+    28  }
+
+    29
+
+    30  int main (void)
+
+    31  {
+
+    32    dummy_function ();
+
+    33    return 0;
+
+    34  }
+
+编译运行的结果如下：
+
+# gcc bt.c -rdynamic -o bt
+
+# ./bt
+
+Obtained 5 stack frames.
+
+./bt(print_trace+0x14) [0x80486e4]
+
+./bt(dummy_function+0xb) [0x8048765]
+
+./bt(main+0x15) [0x804877c]
+
+/lib/tls/libc.so.6(__libc_start_main+0xe4) [0x42015574]
+
+./bt(backtrace_symbols+0x31) [0x8048641]
+
+你可以应用这些函数在程序异常退出时打印backtrace或将它保存到某个文件中，用于之后的分析。更详细的介绍可以参考http://www.linuxjournal.com/article/6391
+--------------------- 
+作者：topembedded 
+来源：CSDN 
+原文：https://blog.csdn.net/topembedded/article/details/3635587 
+版权声明：本文为博主原创文章，转载请附上博文链接！
