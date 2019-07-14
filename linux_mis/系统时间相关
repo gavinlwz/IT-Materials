@@ -6,3 +6,18 @@
   2.  gettimeofday
   
   3. 
+  
+int get_abstime_wait(int microseconds, struct timespec *abstime)
+{
+  long long absmsec;
+  struct timespec ts;
+  if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0) {
+    return -1;
+  }  
+  absmsec = ts.tv_sec * 1000ll + tv.tv_nsec / 1000000ll;
+  absmsec += microseconds;
+  abstime->tv_sec = absmsec / 1000ll;
+  abstime->tv_nsec = absmsec % 1000ll * 1000000ll;
+  return 0
+}
+  
