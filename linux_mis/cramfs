@@ -1,0 +1,9 @@
+1. 虚拟机挂载 cramfs的rootfs
+   sudo mount -o loop  xxxrootf xxxdir
+2. cramfs rootf制作
+   unbuntu安装工具 $ sudo apt install cramfsprogs
+   . mkcramfs工具用来创建CRAMFS文件系统
+      #mkcramfs dirname(文件夹)  root.cramfs(生成的镜像)
+
+    . cramfsck工具用来进行CRAMFS文件系统的释放和检查
+      #cramfsck  root.cramfs -x  dir(文件夹)
