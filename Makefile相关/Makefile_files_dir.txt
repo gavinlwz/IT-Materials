@@ -1,0 +1,29 @@
+CC = cc
+LD = cc
+SRCS = $(wildcard *.cpp)
+OBJS = $(patsubst %cpp, %o, $(SRCS))
+# -I指定头文件目录
+INCLUDE = -I./include
+# -L指定库文件目录，-l指定静态库名字(去掉文件名中的lib前缀和.a后缀)
+LIB = -L./libs -ltomcrypt
+# 开启编译warning和设置优化等级
+CFLAGS = -Wall -O2
+
+TARGET = LibtomDemo
+
+.PHONY:all clean
+
+all: $(TARGET)
+# 链接时候指定库文件目录及库文件名
+$(TARGET): $(OBJS)
+	$(LD) -o $@ $^ $(LIB)
+ 
+# 编译时候指定头文件目录
+%o:%cpp
+	$(CC) -c $^ $(INCLUDE) $(CFLAGS) 
+
+clean:
+	rm -f $(OBJS) $(TARGET)
+--------------------- 
+版权声明：本文为CSDN博主「Coder Liming」的原创文章，遵循CC 4.0 by-sa版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/shaosunrise/article/details/79968921

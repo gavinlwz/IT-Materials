@@ -1,0 +1,17 @@
+.PHONY:all clean
+# 排除目录
+exclude_dirs := .git
+# 显示深度为1的子目录
+dirs := $(shell find . -type d -maxdepth 1)
+# 去掉获取到目录名称前面的./
+dirs := $(basename $(patsubst ./%, %, $(dirs)))
+# 过滤指定目录
+dirs := $(filter-out $(exclude_dirs), $(dirs))
+
+all:
+    $(foreach N,$(dirs),make -C $(N);)
+clean:
+    $(foreach N,$(dirs),make -C $(N) clean;)
+--------------------- 
+版权声明：本文为CSDN博主「Coder Liming」的原创文章，遵循CC 4.0 by-sa版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/shaosunrise/article/details/79968921
