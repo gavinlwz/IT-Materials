@@ -1,0 +1,17 @@
+CPP=g++
+CC=gcc
+AR=ar
+LD=ld
+STRIP=strip
+CFLAGS += 
+LDFLAGS += -pthread
+ELFFILE = adpcm_tool
+objects = adpcm_decode.o adpcm.o
+
+$(ELFFILE) : $(objects)
+	$(CC) -o $(ELFFILE) $(objects) $(CFLAGS) $(LDFLAGS)
+
+all : $(ELFFILE)
+.PHONY : clean
+clean:
+	-rm $(ELFFILE) $(objects)
