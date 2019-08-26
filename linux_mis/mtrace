@@ -1,0 +1,78 @@
+mtrace - 檢查memory leak
+Memory leak中文叫內存洩漏，也是我在開發程式中一個很難搞的問題。拜一些tool所賜，讓工程師可以更容易發現問題所在。
+
+mtrace是glibc內提供的工具，其實它的原理很簡單，就是把你程式中malloc()與free()的位址全部下來，最後兩兩配對，殘留下來沒有配對到的就是leak。
+
+1. 安裝glibc-utils 
+
+2. 在程式中include header file並在程式最前面call mtrace()
+e.g. test.c
+
+#include <stdlib.h>
+#include <mcheck.h>
+ 
+int main(void) {
+    char *p;
+ 
+    mtrace();
+    p = malloc(5);  // 要一塊記憶體，但沒有釋放
+ 
+    return 0;
+}
+</mcheck.h></stdlib.h>
+
+3. compile
+1
+$ gcc -g -o test test.c
+一定要加-g
+
+4. run program
+1
+$ MALLOC_TRACE=output.log ./test
+MALLOC_TRACE指向output file
+
+5. 抓leak
+1
+$ mtrace ./test ./output.log
+
+4
+Memory not freed:
+-----------------
+           Address     Size     Caller
+0x0000000000c2d460      0x5  at /tmp/test.c:8
+很清楚看到test.c第8行allocate 5 byte未釋放
+
+--
+
+不過mtrace算是很陽春的工具，如果是間接allocte記憶體，如call object_new()這種init function，那mtrace就沒辦法表示得那麼清楚了。
+e.g. test2.c
+
+
+#include <stdlib.h>
+#include <mcheck.h>
+#include <glib.h>
+ 
+int main(void) {
+    GHashTable *ht;
+ 
+    mtrace();
+    ht = g_hash_table_new(NULL, NULL);
+ 
+    return 0;
+}
+</glib.h></mcheck.h></stdlib.h>
+
+執行mtrace結果：
+
+Memory not freed:
+-----------------
+           Address     Size     Caller
+0x0000000012a24460     0xfc  at 0x2b267c24f3b1
+0x0000000012a24570    0x1f8  at 0x2b267c24f3b1
+0x0000000012a24770    0x1f8  at 0x2b267c24f3b1
+0x0000000012a24970    0x7f0  at 0x2b267c24f3b1
+0x0000000012a25170     0xc0  at 0x2b267c24f3b1
+0x0000000012a25400    0x3f0  at 0x2b267c262ce1
+0x0000000012a25800    0x3f0  at 0x2b267c262ce1
+
+這樣的訊息對我們來說沒什麼幫助，這時候可以借助更強大的工具valgrind或heap checker。
