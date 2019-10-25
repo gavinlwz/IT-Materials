@@ -145,7 +145,12 @@ Cortex-A15：指令集ARMv7-A，超标量，乱序执行，可选配Neon/VFPv4�
 
 他们指定目标处理器（target ARM processor）。
 
-可选的参数为：arm2', `arm250', `arm3', `arm6', `arm60', `arm600', `arm610', `arm620', `arm7', `arm7m', `arm7d', `arm7dm', `arm7di', `arm7dmi', `arm70', `arm700', `arm700i', `arm710', `arm710c', `arm7100', `arm7500', `arm7500fe', `arm7tdmi', `arm7tdmi-s', `arm8', `strongarm', `strongarm110', `strongarm1100', `arm8', `arm810', `arm9', `arm9e', `arm920', `arm920t', `arm922t', `arm946e-s', `arm966e-s', `arm968e-s', `arm926ej-s', `arm940t', `arm9tdmi', `arm10tdmi', `arm1020t', `arm1026ej-s', `arm10e', `arm1020e', `arm1022e', `arm1136j-s', `arm1136jf-s', `mpcore', `mpcorenovfp', `arm1176jz-s', `arm1176jzf-s', `xscale', `iwmmxt', `ep9312'，Cortex-A8， Cortex-A9
+可选的参数为：arm2', `arm250', `arm3', `arm6', `arm60', `arm600', `arm610', `arm620', `arm7', `arm7m', `arm7d', `arm7dm', `arm7di', 
+`arm7dmi', `arm70', `arm700', `arm700i', `arm710', `arm710c', `arm7100', `arm7500', `arm7500fe', `arm7tdmi', `arm7tdmi-s', `arm8',
+`strongarm', `strongarm110', `strongarm1100', `arm8', `arm810', `arm9', `arm9e', `arm920', `arm920t', `arm922t', `arm946e-s', 
+`arm966e-s', `arm968e-s', `arm926ej-s', `arm940t', `arm9tdmi', `arm10tdmi', `arm1020t', `arm1026ej-s', `arm10e', `arm1020e', 
+`arm1022e', `arm1136j-s', `arm1136jf-s', `mpcore', `mpcorenovfp', `arm1176jz-s', `arm1176jzf-s', `xscale', `iwmmxt', 
+`ep9312'，Cortex-A8， Cortex-A9
 
 
 -march=
