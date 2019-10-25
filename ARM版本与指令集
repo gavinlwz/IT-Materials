@@ -1,17 +1,12 @@
 转载：http://blog.sina.com.cn/s/blog_602f87700100kaa3.html
-常常能看到ARM7，ARM9，ARM11，以及armv6k等不同的表达。且在GCC编译中，常常要用到 -march, -mcpu等。他们分别表达什么涵义呢？Sam自己也不很清楚，只是大概有个模糊的概念。今天就仔细研究一下。
+常常能看到ARM7，ARM9，ARM11，以及armv6k等不同的表达。且在GCC编译中，常常要用到 -march, -mcpu等。他们分别表达什么涵义呢？
+Sam自己也不很清楚，只是大概有个模糊的概念。今天就仔细研究一下。
 
- 
-
-ARM（Advanced RISC Machines）是微处理器行业的一家知名企业。设计了大量高性能、廉价、耗能低的RISC处理器、相关技术及软件。1985年，第一个ＡＲＭ原型在英国剑桥诞生。ＡＲＭ公司的特点是只设计芯片，而不生产。ARM将其技术授权给世界上许多著名的半导体、软件和OEM厂商，每个厂商得到的都是一套独一无二的ARM相关技术及服务。利用这种合伙关系，ARM很快成为许多全球性RISC标准的缔造者。
-
- 
-
- 
+ARM（Advanced RISC Machines）是微处理器行业的一家知名企业。设计了大量高性能、廉价、耗能低的RISC处理器、相关技术及软件。
+1985年，第一个ＡＲＭ原型在英国剑桥诞生。ＡＲＭ公司的特点是只设计芯片，而不生产。ARM将其技术授权给世界上许多著名的半导体、软件和OEM厂商，
+每个厂商得到的都是一套独一无二的ARM相关技术及服务。利用这种合伙关系，ARM很快成为许多全球性RISC标准的缔造者。
 
 ＡＲＭ公司定义了６种主要的指令集体系结构版本。Ｖ１－Ｖ６。（所以上面提到的ＡＲＭｖ６是指指令集版本号）。 即：ARM architecture
-
- 
 
 ＡＲＭｖ１：
 
@@ -57,17 +52,6 @@ ARM1176JZ(F)-S基于ARMv6KZ 在 ARM1136EJ(F)-S 基础上增加MMU、TrustZone。
 ARM11 MPCore基于ARMv6K 在ARM1136EJ(F)-S基础上可以包括1-4 核SMP、MMU。
 
 ARMv7-A：
-
- 
-
- 
-
- 
-
- 
-
- 
-
 ARM处理器核：
 
 ARM公司开发了很多ARM处理器核，最新版位ARM11。
@@ -142,7 +126,6 @@ Xscale处理器
 已使用在数字移动电话、个人数字助理和网络产品等场合。
 Xscale处理器是Intel目前主要推广的一款ARM微处理器
 
- 
 
 ARM11：指令集ARMv6，8级流水线，1.25DMIPS/MHz
 
@@ -152,15 +135,6 @@ Cortex-A9：指令集ARMv7-A，8级整数流水线，超标量双发射，乱序
 Cortex-A5：指令集ARMv7-A，8级整数流水线，1.57DMIPS/MHz，可选配Neon/VFPv3，支持多核
 
 Cortex-A15：指令集ARMv7-A，超标量，乱序执行，可选配Neon/VFPv4，支持多核
- 
-
- 
-
-ARM <wbr>指令集版本和ARM <wbr>版本
-
-ARM <wbr>指令集版本和ARM <wbr>版本
-
-
  
 
  当使用ARM toolchain时，会有-march -mcpu等。
@@ -173,7 +147,6 @@ ARM <wbr>指令集版本和ARM <wbr>版本
 
 可选的参数为：arm2', `arm250', `arm3', `arm6', `arm60', `arm600', `arm610', `arm620', `arm7', `arm7m', `arm7d', `arm7dm', `arm7di', `arm7dmi', `arm70', `arm700', `arm700i', `arm710', `arm710c', `arm7100', `arm7500', `arm7500fe', `arm7tdmi', `arm7tdmi-s', `arm8', `strongarm', `strongarm110', `strongarm1100', `arm8', `arm810', `arm9', `arm9e', `arm920', `arm920t', `arm922t', `arm946e-s', `arm966e-s', `arm968e-s', `arm926ej-s', `arm940t', `arm9tdmi', `arm10tdmi', `arm1020t', `arm1026ej-s', `arm10e', `arm1020e', `arm1022e', `arm1136j-s', `arm1136jf-s', `mpcore', `mpcorenovfp', `arm1176jz-s', `arm1176jzf-s', `xscale', `iwmmxt', `ep9312'，Cortex-A8， Cortex-A9
 
- 
 
 -march=
 
