@@ -1,0 +1,182 @@
+转载：http://blog.sina.com.cn/s/blog_602f87700100kaa3.html
+常常能看到ARM7，ARM9，ARM11，以及armv6k等不同的表达。且在GCC编译中，常常要用到 -march, -mcpu等。他们分别表达什么涵义呢？Sam自己也不很清楚，只是大概有个模糊的概念。今天就仔细研究一下。
+
+ 
+
+ARM（Advanced RISC Machines）是微处理器行业的一家知名企业。设计了大量高性能、廉价、耗能低的RISC处理器、相关技术及软件。1985年，第一个ＡＲＭ原型在英国剑桥诞生。ＡＲＭ公司的特点是只设计芯片，而不生产。ARM将其技术授权给世界上许多著名的半导体、软件和OEM厂商，每个厂商得到的都是一套独一无二的ARM相关技术及服务。利用这种合伙关系，ARM很快成为许多全球性RISC标准的缔造者。
+
+ 
+
+ 
+
+ＡＲＭ公司定义了６种主要的指令集体系结构版本。Ｖ１－Ｖ６。（所以上面提到的ＡＲＭｖ６是指指令集版本号）。 即：ARM architecture
+
+ 
+
+ＡＲＭｖ１：
+
+该版本的原型机是ARM1，没有用于商业产品。
+
+ＡＲＭｖ２：
+
+对V1版进行了扩展，包含了对32位结果的乘法指令和协处理器指令的支持。
+
+ＡＲＭｖ３：
+
+ARM公司第一个微处理器ARM6核心是版本3的，它作为IP核、独立的处理器、具有片上高速缓存、MMU和写缓冲的集成CPU。
+
+ＡＲＭｖ４：
+
+当前应用最广泛的ARM指令集版本。
+
+ARM7TDMI、ARM720T、ARM9TDMI、ARM940T、ARM920T、Intel的StrongARM等是基于ARMv4T版本。
+ARMv5:
+
+ARM9E-S、ARM966E-S、ARM1020E、ARM 1022E以及XScale是ARMv5TE的。
+
+ARM9EJ-S、ARM926EJ-S、ARM7EJ-S、ARM1026EJ-S是基于ARMv5EJ的。
+
+ARM10也采用。
+
+其中后缀意义如下：
+
+E：增强型DSP指令集。包括全部算法和16位乘法操作。
+
+J：支持新的Java。
+
+ARMv6:
+
+采用ARMv6核的处理器是ARM11系列。
+
+ARM1136J(F)-S基于ARMv6主要特性有SIMD、Thumb、Jazelle、DBX、(VFP)、MMU。
+
+ARM1156T2(F)-S基于ARMv6T2 主要特性有SIMD、Thumb-2、(VFP)、MPU。
+
+ARM1176JZ(F)-S基于ARMv6KZ 在 ARM1136EJ(F)-S 基础上增加MMU、TrustZone。
+
+ARM11 MPCore基于ARMv6K 在ARM1136EJ(F)-S基础上可以包括1-4 核SMP、MMU。
+
+ARMv7-A：
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ARM处理器核：
+
+ARM公司开发了很多ARM处理器核，最新版位ARM11。
+
+ARM7微处理器系列
+低功耗的32位RISC处理器，冯·诺依曼结构。极低的功耗，适合便携式产品。
+具有嵌入式ICE－RT逻辑，调试开发方便。
+3级流水线结构。能够提供0.9MIPS的三级流水线结构
+代码密度高，兼容16位的Thumb指令集。
+对操作系统的支持广泛，包括Windows CE、Linux、Palm OS等。
+指令系统与ARM9系列、ARM9E系列和ARM10E系列兼容，便于用户的产品升级换代。
+主频最高可达130MIPS。
+主要应用领域：工业控制、Internet设备、网络和调制解调器设备、移动电话等多种多媒体和嵌入式应用。
+
+ARM7TDMI微处理器
+4种类型：
+ARM7TDMI、ARM7TDMI-S、ARM720T、ARM7EJ。
+ARM7TMDI是目前使用最广泛的32位嵌入式RISC处理器，属低端ARM处理器核。
+注：“ARM核”并不是芯片，ARM核与其它部件如RAM、ROM、片内外设组合在一起才能构成现实的芯片。
+
+ 
+
+ARM9微处理器系列
+ARM9系列微处理器在高性能和低功耗特性方面提供最佳的性能。
+5级整数流水线，
+哈佛体系结构。
+支持32位ARM指令集和16位Thumb指令集。
+全性能的MMU，支持Windows CE、Linux、Palm OS等多种主流嵌入式操作系统。
+支持数据Cache和指令Cache，具有更高的指令和数据处理能力。
+主要应用：无线设备、仪器仪表、安全系统、机顶盒、高端打印机、数码照相机和数码摄像机。
+3种类型：ARM920T、ARM922T和ARM940T。
+
+ARM9E微处理器系列
+单一处理器内核提供微控制器、DSP、Java应用系统的解决方案。
+支持DSP指令集。
+5级整数流水线，指令执行效率更高。
+支持32位ARM指令集和16位Thumb指令集。
+支持VFP9浮点处理协处理器。
+全性能的MMU，支持Windows CE、Linux、Palm OS等多种主流嵌入式操作系统。
+MPU支持实时操作系统。
+支持数据Cache和指令Cache，
+主频最高可达300MIPS。
+主要应用：下一代无线设备、数字消费品、成像设备、工业控制、存储设备和网络设备等领域。
+3种类型：ARM926EJ-S、ARM946E-S和ARM966E-S。
+
+ 
+
+ARM10E微处理器系列
+与同等的ARM9比较，在同样的时钟频率下，性能提高了近50%，功耗极低。
+支持DSP指令集。
+6级整数流水线，指令执行效率更高。
+支持32位ARM指令集和16位Thumb指令集。
+支持VFP10浮点处理协处理器。
+全性能的MMU，支持Windows CE、Linux、Palm OS等多种主流嵌入式操作系统。
+支持数据Cache和指令Cache。
+主频最高可达400MIPS。
+内嵌并行读/写操作部件。
+主要应用：下一代无线设备、数字消费品、成像设备、工业控制、通信和信息系统等领域。
+3种类型：ARM1020E、ARM1022E和ARM1026EJ-S。
+
+SecurCore微处理器系列
+专为安全需要而设计，提供了完善的32位RISC技术的安全解决方案。
+灵活的保护单元，以确保操作系统和应用数据的安全。
+采用软内核技术，防止外部对其进行扫描探测。
+可集成用户自己的安全特性和其他协处理器。
+主要应用：对安全性要求较高的应用产品及应用系统，如电子商务、电子政务、电子银行业务、网络和认证系统等领域。
+4种类型：SecurCore SC100、SecurCore SC110、SecurCore SC200和SecurCore SC210。
+
+Xscale处理器
+基于ARMv5TE体系结构的解决方案，是一款全性能、高性价比、低功耗的处理器。
+支持16位的Thumb指令和DSP指令集。
+已使用在数字移动电话、个人数字助理和网络产品等场合。
+Xscale处理器是Intel目前主要推广的一款ARM微处理器
+
+ 
+
+ARM11：指令集ARMv6，8级流水线，1.25DMIPS/MHz
+
+Cortex-A8：指令集ARMv7-A，13级整数流水线，超标量双发射，2.0DMIPS/MHz，标配Neon，不支持多核
+Scorpion：指令集ARMv7-A，高通获得指令集授权后在A8的基础上设计的。13级整数流水线，超标量双发射，部分乱序执行，2.1DMIPS/MHz，标配Neon，支持多核
+Cortex-A9：指令集ARMv7-A，8级整数流水线，超标量双发射，乱序执行，2.5DMIPS/MHz，可选配Neon/VFPv3，支持多核
+Cortex-A5：指令集ARMv7-A，8级整数流水线，1.57DMIPS/MHz，可选配Neon/VFPv3，支持多核
+
+Cortex-A15：指令集ARMv7-A，超标量，乱序执行，可选配Neon/VFPv4，支持多核
+ 
+
+ 
+
+ARM <wbr>指令集版本和ARM <wbr>版本
+
+ARM <wbr>指令集版本和ARM <wbr>版本
+
+
+ 
+
+ 当使用ARM toolchain时，会有-march -mcpu等。
+
+-mcpu=
+
+-mtune=
+
+他们指定目标处理器（target ARM processor）。
+
+可选的参数为：arm2', `arm250', `arm3', `arm6', `arm60', `arm600', `arm610', `arm620', `arm7', `arm7m', `arm7d', `arm7dm', `arm7di', `arm7dmi', `arm70', `arm700', `arm700i', `arm710', `arm710c', `arm7100', `arm7500', `arm7500fe', `arm7tdmi', `arm7tdmi-s', `arm8', `strongarm', `strongarm110', `strongarm1100', `arm8', `arm810', `arm9', `arm9e', `arm920', `arm920t', `arm922t', `arm946e-s', `arm966e-s', `arm968e-s', `arm926ej-s', `arm940t', `arm9tdmi', `arm10tdmi', `arm1020t', `arm1026ej-s', `arm10e', `arm1020e', `arm1022e', `arm1136j-s', `arm1136jf-s', `mpcore', `mpcorenovfp', `arm1176jz-s', `arm1176jzf-s', `xscale', `iwmmxt', `ep9312'，Cortex-A8， Cortex-A9
+
+ 
+
+-march=
+
+ target ARM architecture。 目标处理器架构。
+
+`armv2', `armv2a', `armv3', `armv3m', `armv4', `armv4t', `armv5', `armv5t', `armv5te', `armv6', `armv6j', `iwmmxt', `ep9312'. armv7-a等。
