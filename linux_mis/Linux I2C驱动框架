@@ -1,0 +1,751 @@
+Linux I2C驱动框架
+文章目录
+Linux I2C驱动框架
+一、几个重要的对象
+1、I2C总线
+2、I2C驱动
+3、I2C设备
+4、I2C设配器
+小结
+二、内核源码分析
+1、注册I2C驱动
+2、注册I2C设备
+3、驱动如果使用设配器给设备发送数据
+三、总结
+一、几个重要的对象
+在讨论I2C驱动框架前，先讨论几个重要的概念
+
+1、I2C总线
+struct bus_type i2c_bus_type = {
+	.name		= "i2c",
+	.match		= i2c_device_match,
+	.probe		= i2c_device_probe,
+	.remove		= i2c_device_remove,
+	.shutdown	= i2c_device_shutdown,
+	.pm		= &i2c_device_pm_ops,
+};
+1
+2
+3
+4
+5
+6
+7
+8
+I2C总线对应着/bus下的一条总线，这个i2c总线结构体管理着i2c设备与I2C驱动的匹配，删除等操作，I2C总线会调用i2c_device_match函数看I2C设备和I2C驱动是否匹配，如果匹配就调用i2c_device_probe函数，进而调用I2C驱动的probe函数
+
+特别提示：i2c_device_match会管理I2C设备和I2C总线匹配规则，这将和如何编写I2C驱动程序息息相关
+
+2、I2C驱动
+struct i2c_driver {
+	int (*probe)(struct i2c_client *, const struct i2c_device_id *); //probe函数
+	struct device_driver driver; //表明这是一个驱动
+	const struct i2c_device_id *id_table; //要匹配的从设备信息(名称)
+	int (*detect)(struct i2c_client *, struct i2c_board_info *); //设备探测函数
+	const unsigned short *address_list; //设备地址
+	struct list_head clients; //设备链表
+};
+1
+2
+3
+4
+5
+6
+7
+8
+对应的是I2C驱动程序
+
+3、I2C设备
+struct i2c_client {
+	unsigned short addr; //设备地址
+	char name[I2C_NAME_SIZE]; //设备名称
+	struct i2c_adapter *adapter; //设配器，值I2C控制器
+	struct i2c_driver *driver; //设备对应的驱动
+	struct device dev; //表明这是一个设备
+	int irq; //中断号
+	struct list_head detected; //节点
+};
+1
+2
+3
+4
+5
+6
+7
+8
+9
+对应的是I2C设备
+
+4、I2C设配器
+I2C设配器是什么？
+
+经过上面的介绍，知道有I2C驱动和I2C设备，我们需要通过I2C驱动去和I2C设备通讯，这其中就需要一个I2C设配器，I2C设配器对应的就是SOC上的I2C控制器
+
+struct i2c_adapter {
+	unsigned int id; //设备器的编号
+	const struct i2c_algorithm *algo; //算法，发送时序
+	struct device dev; //表明这是一个设备
+};
+1
+2
+3
+4
+5
+其中的i2c_algorithm是算法的意思，对应的就是如何发送I2C时序
+
+struct i2c_algorithm {
+    /* 作为主设备时的发送函数 */
+	int (*master_xfer)(struct i2c_adapter *adap, struct i2c_msg *msgs,
+			   int num);
+
+    /* 作为从设备时的发送函数 */
+	int (*smbus_xfer) (struct i2c_adapter *adap, u16 addr,
+			   unsigned short flags, char read_write,
+			   u8 command, int size, union i2c_smbus_data *data);
+};
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+小结
+I2C驱动有4个重要的东西，I2C总线、I2C驱动、I2C设备、I2C设备器
+
+I2C总线：维护着两个链表（I2C驱动、I2C设备），管理I2C设备和I2C驱动的匹配和删除等
+I2C驱动：对应的就是I2C设备的驱动程序
+I2C设备：是具体硬件设备的一个抽象
+I2C设配器：用于I2C驱动和I2C设备间的通用，是SOC上I2C控制器的一个抽象
+以注册I2C驱动为例，简单讲解I2C总线的运行机制（I2C设备道理相同）
+
+1、注册I2C驱动
+2、将I2C驱动添加到I2C总线的驱动链表中
+3、遍历I2C总线上的设备链表，根据i2c_device_match函数进行匹配，如果匹配调用i2c_device_probe函数
+4、i2c_device_probe函数会调用I2C驱动的probe函数
+经过上面的讲解，对I2C驱动框架应该有了基本的了解了，下面通过分析内核源码来深入学习I2C驱动框架
+
+二、内核源码分析
+1、注册I2C驱动
+编写I2C驱动程序时，通过调用i2c_add_driver函数来注册驱动，下面来分析这个函数发生了什么
+
+static inline int i2c_add_driver(struct i2c_driver *driver)
+{
+	return i2c_register_driver(THIS_MODULE, driver);
+}
+1
+2
+3
+4
+int i2c_register_driver(struct module *owner, struct i2c_driver *driver)
+{
+    /*
+    	struct bus_type i2c_bus_type = {
+			.name		= "i2c",
+			.match		= i2c_device_match,
+			.probe		= i2c_device_probe,
+			.remove		= i2c_device_remove,
+			.shutdown	= i2c_device_shutdown,
+			.pm		= &i2c_device_pm_ops,
+		};
+    */
+    driver->driver.bus = &i2c_bus_type; // 绑定总线
+    
+    driver_register(&driver->driver); // 向总线注册驱动
+    
+    /* 遍历I2C总线上所有设备，调用__process_new_driver函数 */
+    bus_for_each_dev(&i2c_bus_type, NULL, driver, __process_new_driver);
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+上面的程序可以看到，在调用i2c_add_driver后做了三件事，第一绑定总线，要记住这个总线结构体，第二向总线注册驱动，这算是I2C驱动框架的重点，第三遍历总线的设备，调用__process_new_driver函数
+
+乍一看，会绝对第三件事比较重要，好像匹配规则在这里面，其实这里面有一部分匹配规则，但并不是最重要的，最重要的是在driver_register函数中
+
+下面将重点分析driver_register函数
+
+int driver_register(struct device_driver *drv)
+{
+    bus_add_driver(drv); // 将驱动添加到总线上
+}
+1
+2
+3
+4
+int bus_add_driver(struct device_driver *drv)
+{
+    driver_attach(drv);
+    
+    /* 将驱动添加到总线的驱动链表(bus->p->klist_drivers) */
+    klist_add_tail(&priv->knode_bus, &bus->p->klist_drivers); 
+}
+1
+2
+3
+4
+5
+6
+7
+接下来分析driver_attach(drv)这个函数，这个函数是重头
+
+int driver_attach(struct device_driver *drv)
+{
+	return bus_for_each_dev(drv->bus, NULL, drv, __driver_attach);
+}
+1
+2
+3
+4
+来看看bus_for_each_dev函数做了什么
+
+int bus_for_each_dev(struct bus_type *bus, struct device *start,
+		     void *data, int (*fn)(struct device *, void *))
+{
+    /* 遍历总线的所有设备链表(bus->p->klist_devices)的所有设备，执行fn函数 */
+	while ((dev = next_device(&i)) && !error)
+		error = fn(dev, data);
+}
+1
+2
+3
+4
+5
+6
+7
+会到上一个函数，我们知道bus_for_each_dev对应的fn函数是__driver_attach函数，也就是说，driver_attach函数会遍历总线上的所有设备执行__driver_attach函数，接下面来分析__driver_attach函数
+
+static int __driver_attach(struct device *dev, void *data)
+{
+    /* 判断驱动和设备是否匹配 */
+	if (!driver_match_device(drv, dev))
+		return 0;
+    
+    /* 如果匹配的话，调用driver_probe_device函数 */
+    if (!dev->driver)
+		driver_probe_device(drv, dev);
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+首先来看一看driver_match_device函数，通过这个函数我们可以知道匹配规则
+
+static inline int driver_match_device(struct device_driver *drv,
+				      struct device *dev)
+{
+    /* 调用总线的macth函数 */
+	return drv->bus->match ? drv->bus->match(dev, drv) : 1;
+}
+1
+2
+3
+4
+5
+6
+请不要忘了现在的总线式i2c总线，对应的结构体上面已经给出，如下
+
+struct bus_type i2c_bus_type = {
+	.name		= "i2c",
+	.match		= i2c_device_match,
+	.probe		= i2c_device_probe,
+	.remove		= i2c_device_remove,
+	.shutdown	= i2c_device_shutdown,
+	.pm		= &i2c_device_pm_ops,
+};
+1
+2
+3
+4
+5
+6
+7
+8
+drv->bus->match对应的就是i2c_bus_type.match
+
+下面来分析i2c_device_match函数
+
+static int i2c_device_match(struct device *dev, struct device_driver *drv)
+{
+    struct i2c_client	*client = i2c_verify_client(dev); // 有device获得i2c_client
+    struct i2c_driver	*driver = to_i2c_driver(drv); // 有device_driver获得i2c_driver
+    
+    /* 调用i2c_match_id进行匹配 */
+    return i2c_match_id(driver->id_table, client) != NULL;
+}
+1
+2
+3
+4
+5
+6
+7
+8
+driver->id_table是什么，来看一看id_table的定义
+
+struct i2c_device_id {
+	char name[I2C_NAME_SIZE];
+};
+1
+2
+3
+其实就是一个字符串，表示设备的名字
+
+i2c_driver中有一个我们自己i2c_device_id数组，用来匹配i2c设备
+
+来看看怎么匹配
+
+static const struct i2c_device_id *i2c_match_id(const struct i2c_device_id *id,
+						const struct i2c_client *client)
+{
+    /* 字符串匹配 */
+	strcmp(client->name, id->name);   
+}
+1
+2
+3
+4
+5
+6
+可以知道匹配规则是
+
+strcmp(i2c_client->name, i2c_driver->i2c_device_id->name); 
+1
+就是匹配驱动和设备中的名字
+
+好了，现在弄清楚匹配规则了，下面来看一看如果匹配成功后要干嘛
+
+回到下面这个函数
+
+static int __driver_attach(struct device *dev, void *data)
+{
+    /* 判断驱动和设备是否匹配 */
+	if (!driver_match_device(drv, dev))
+		return 0;
+    
+    /* 如果匹配的话，调用driver_probe_device函数 */
+    if (!dev->driver)
+		driver_probe_device(drv, dev);
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+可以看到匹配成功后，会调用driver_probe_device函数，下面看一看这个函数
+
+int driver_probe_device(struct device_driver *drv, struct device *dev)
+{
+	really_probe(dev, drv);
+}
+1
+2
+3
+4
+static int really_probe(struct device *dev, struct device_driver *drv)
+{
+    /* 调用了总线的probe函数 */
+    dev->bus->probe(dev);
+}
+1
+2
+3
+4
+5
+struct bus_type i2c_bus_type = {
+	.name		= "i2c",
+	.match		= i2c_device_match,
+	.probe		= i2c_device_probe,
+	.remove		= i2c_device_remove,
+	.shutdown	= i2c_device_shutdown,
+	.pm		= &i2c_device_pm_ops,
+};
+1
+2
+3
+4
+5
+6
+7
+8
+可以知道，总线的probe函数是i2c_device_probe
+
+static int i2c_device_probe(struct device *dev)
+{
+    /* 调用i2c驱动的probe函数 */
+    driver->probe(client, i2c_match_id(driver->id_table, client));
+}
+1
+2
+3
+4
+5
+通过上面的分析，可以知道i2c总线进制，当向内核注册i2c驱动时，会将i2c驱动添加到总线的链表中，遍历总线上所有设备，通过i2c_client->name, i2c_driver->i2c_device_id->name进行字符串匹配，如果匹配，就调用驱动程序的probe函数
+
+继续回到上面的程序
+
+int i2c_register_driver(struct module *owner, struct i2c_driver *driver)
+{
+    /*
+    	struct bus_type i2c_bus_type = {
+			.name		= "i2c",
+			.match		= i2c_device_match,
+			.probe		= i2c_device_probe,
+			.remove		= i2c_device_remove,
+			.shutdown	= i2c_device_shutdown,
+			.pm		= &i2c_device_pm_ops,
+		};
+    */
+    driver->driver.bus = &i2c_bus_type; // 绑定总线
+    
+    driver_register(&driver->driver); // 向总线注册驱动
+    
+    /* 遍历I2C总线上所有设备，调用__process_new_driver函数 */
+    bus_for_each_dev(&i2c_bus_type, NULL, driver, __process_new_driver);
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+刚刚我们分析了driver_register，下面来分析一下bus_for_each_dev
+
+其实bus_for_each_dev蕴含着i2c总线的另外一种匹配规则，不过不经常使用
+
+int bus_for_each_dev(struct bus_type *bus, struct device *start,
+		     void *data, int (*fn)(struct device *, void *))
+{
+    /* 遍历总线上的设备链表(bus->p->klist_devices)的所有设备，调用fn函数 */
+	while ((dev = next_device(&i)) && !error)
+		error = fn(dev, data);	
+}
+1
+2
+3
+4
+5
+6
+7
+由上面可知，fn函数对应的是__process_new_driver函数
+
+static int __process_new_driver(struct device *dev, void *data)
+{
+    /* data对应驱动，to_i2c_adapter(dev)对应设备对应的适配器 */
+	return i2c_do_add_adapter(data, to_i2c_adapter(dev));
+}
+1
+2
+3
+4
+5
+static int i2c_do_add_adapter(struct i2c_driver *driver,
+			      struct i2c_adapter *adap)
+{
+	i2c_detect(adap, driver);
+}
+1
+2
+3
+4
+5
+static int i2c_detect(struct i2c_adapter *adapter, struct i2c_driver *driver)
+{
+    address_list = driver->address_list; // 获取驱动指定的地址
+    
+    temp_client->adapter = adapter; // 绑定好设配器（I2C控制器）
+    
+    /* 使用该是适配器，去探测所有地址 */
+    for (i = 0; address_list[i] != I2C_CLIENT_END; i += 1)
+        i2c_detect_address(temp_client, driver);
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+static int i2c_detect_address(struct i2c_client *temp_client,
+			      struct i2c_driver *driver)
+{
+    i2c_check_addr_busy(adapter, addr);
+        
+    i2c_default_probe(adapter, addr);
+    
+    /* 如果能到达这里，就说明该i2c控制器对应的总线上，该地址存在，调用驱动的detect函数进一步确认 */
+    driver->detect(temp_client, &info);
+    
+    /* 如果驱动程序确认的话，生成i2c设备 */
+    client = i2c_new_device(adapter, &info);
+    list_add_tail(&client->detected, &driver->clients); // 将该设备添加到驱动程序的链表中
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+以上的做法是，遍历总线上的所有设备，拿到设备对应的设备器（I2C控制器），去给总线发送驱动指定好的地址，如果地址存在的话，就调用驱动的detect函数
+
+为什么会有这种方式？
+
+如果在不知道i2c设备在哪一条总线的情况下，这种方式就发挥了作用
+
+上面分析了注册I2C驱动，下面来分析注册I2C设备
+
+2、注册I2C设备
+内核通过i2c_new_device注册i2c设备
+
+struct i2c_client *
+i2c_new_device(struct i2c_adapter *adap, struct i2c_board_info const *info)
+1
+2
+需要指定i2c设配器和设备信息
+
+i2c_adapter可以通过i2c_get_adapter来获取
+
+struct i2c_adapter *i2c_get_adapter(int id)
+1
+i2c_get_adapter可以获取哪个i2c控制器，获取哪一个i2c控制器取决于你的i2c设备接在哪条i2c总线上
+
+i2c_board_info结构体描述了设备的硬件信息
+
+struct i2c_board_info {
+	char		type[I2C_NAME_SIZE]; // 设备名称，用于与驱动匹配
+	unsigned short	addr; // 设备地址
+	int		irq; // 中断号
+};
+1
+2
+3
+4
+5
+下面来详细分析i2c_new_device函数
+
+struct i2c_client *
+i2c_new_device(struct i2c_adapter *adap, struct i2c_board_info const *info)
+{
+    struct i2c_client	*client;
+    
+    client->adapter = adap; // 设定设备的设配器
+    client->addr = info->addr; // 地址
+    client->irq = info->irq; // 中断号
+    
+    client->dev.bus = &i2c_bus_type; // 绑定总线
+    
+    device_register(&client->dev); // 向总线注册设备
+    
+    return client;
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+下面分析device_register的过程
+
+int device_register(struct device *dev)
+{
+	device_initialize(dev);
+	return device_add(dev);
+}
+1
+2
+3
+4
+5
+int device_add(struct device *dev)
+{
+    bus_add_device(dev);
+    
+    bus_probe_device(dev);
+}
+1
+2
+3
+4
+5
+6
+int bus_add_device(struct device *dev)
+{
+    /* 将设备添加到总线的设备链表中(bus->p->klist_devices) */
+    klist_add_tail(&dev->p->knode_bus, &bus->p->klist_devices);
+}
+1
+2
+3
+4
+5
+void bus_probe_device(struct device *dev)
+{
+	device_attach(dev);
+}
+1
+2
+3
+4
+int device_attach(struct device *dev)
+{
+    bus_for_each_drv(dev->bus, NULL, dev, __device_attach);
+}
+1
+2
+3
+4
+int bus_for_each_drv(struct bus_type *bus, struct device_driver *start,
+		     void *data, int (*fn)(struct device_driver *, void *))
+{
+    /* 遍历总线的驱动链表上的所有驱动，调用fn函数 */
+	while ((drv = next_driver(&i)) && !error)
+		error = fn(drv, data);
+}
+1
+2
+3
+4
+5
+6
+7
+这里的fn函数指的是__device_attach函数
+
+static int __device_attach(struct device_driver *drv, void *data)
+{
+    /* 判断是够匹配 */
+	if (!driver_match_device(drv, dev))
+		return 0;
+
+	return driver_probe_device(drv, dev);
+}
+1
+2
+3
+4
+5
+6
+7
+8
+driver_match_device和driver_probe_device函数跟上面分析的完全相同，这里不再累赘
+
+至此注册i2c设备已经分析完，流程为，注册i2c设备，将i2c加入总线的设备链表中，调用总线的匹配函数判断是够匹配，如果匹配，就调用驱动的probe函数
+
+内核还有静态一种注册i2c设备的方法
+
+通过i2c_register_board_info注册，起始最后还是调用了i2c_new_device，这里简单分析一下
+
+int __init
+i2c_register_board_info(int busnum,
+	struct i2c_board_info const *info, unsigned len)
+{
+    list_add_tail(&devinfo->list, &__i2c_board_list); // 将设备信息添加到链表中
+}
+1
+2
+3
+4
+5
+6
+static void i2c_scan_static_board_info(struct i2c_adapter *adapter)
+{
+	list_for_each_entry(devinfo, &__i2c_board_list, list) {
+		if (devinfo->busnum == adapter->nr
+				&& !i2c_new_device(adapter,
+						&devinfo->board_info))
+	}
+}
+1
+2
+3
+4
+5
+6
+7
+8
+3、驱动如果使用设配器给设备发送数据
+通过上面的分析，我们已经知道了i2c总线的工作机制，下面来看看当i2c设备和i2c驱动匹配之后，驱动程序要怎么去和设备通讯
+
+驱动程序一般调用i2c_transfer来发送信息
+
+int i2c_transfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
+1
+需要指定i2c设配器
+
+上面说过驱动程序是 i2c设配器向设备发送数据的，那么i2c_transferv底层肯定是通过i2c_adapter发送数据的
+
+int i2c_transfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
+{
+    adap->algo->master_xfer(adap, msgs, num); // 通过设配器发送数据
+}
+1
+2
+3
+4
+三、总结
+i2c总线维护着两个链表，一个驱动链表，一个设备链表，每当注册进一个驱动（或设备），就会将其添加到总线上相应的链表上，然后遍历总线的设备(或驱动)链表的所有设备(或驱动)，通过总线的匹配函数判断是够匹配，如果匹配，则调用驱动的probe函数，然后我们就可以在probe函数注册字符设备，创建设备节点，实现fops集等等
+————————————————
+版权声明：本文为CSDN博主「JT同学」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_42462202/article/details/91128914
