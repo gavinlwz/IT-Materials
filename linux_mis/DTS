@@ -1,10 +1,14 @@
 针对上面的dts，注意一下几点：
 1).rtk_gpio_ctl_mlk这个是node的名字，自己可以随便定义，当然最好是见名知意，可以通过驱动程序打印当前使用的设备树节点
         printk(“now dts node name is %s\n",pdev->dev.of_node->name);
-2). compatible选项是用来和驱动程序中的of_match_table指针所指向的of_device_id结构里的compatible字段匹配 的，只有dts里的compatible字段的名字和驱动程序中of_device_id里的compatible字段的名字一样，驱动程序才能进入 probe函数
-3).对 于gpios这个字段，首先&rtk_iso_gpio指明了这个gpio是连接到的是rtk_iso_gpio,接着那个8是gpio number偏移量，它是以rtk_iso_gpiobase为基准的,紧接着那个0说明目前配置的gpio number 是设置成输入input,如果是1就是设置成输出output.最后一个字段1是指定这个gpio 默认为高电平，如果是0则是指定这个gpio默认为低电平
-4).如 果驱动里面只是利用compatible字段进行匹配进入probe函数，那么gpios 可以不需要，但是如果驱动程序里面是采用设备树相关的方法进行操作获取gpio  number,那么gpios这个字段必须使用。 gpios这个字段是由of_get_gpio_flags函数
-默认指定的name.
+2). compatible选项是用来和驱动程序中的of_match_table指针所指向的of_device_id结构里的compatible字段匹配 的，
+    只有dts里的compatible字段的名字和驱动程序中of_device_id里的compatible字段的名字一样，驱动程序才能进入 probe函数
+3).对 于gpios这个字段，首先&rtk_iso_gpio指明了这个gpio是连接到的是rtk_iso_gpio,接着那个8是gpio number偏移量，
+   它是以rtk_iso_gpiobase为基准的,紧接着那个0说明目前配置的gpio number 是设置成输入input,如果是1就是设置成输出output.
+   最后一个字段1是指定这个gpio 默认为高电平，如果是0则是指定这个gpio默认为低电平
+4).如 果驱动里面只是利用compatible字段进行匹配进入probe函数，那么gpios 可以不需要，
+   但是如果驱动程序里面是采用设备树相关的方法进行操作获取gpio  number,那么gpios这个字段必须使用。
+    gpios这个字段是由of_get_gpio_flags函数默认指定的name.
 获取gpio number的函数如下：
 of_get_named_gpio_flags()
 of_get_gpio_flags()    
@@ -12,6 +16,8 @@ of_get_gpio_flags()
 
 Linux内核中目前DTS相关的函数都是以of_前缀开头的，它们的实现位于内核源码的drivers/of下面
  void __iomem*of_iomap(struct device_node *node, int index)
- 通过设 备结点直接进行设备内存区间的 ioremap()，index是内存段的索引。若设备结点的reg属性有多段，可通过index标示要ioremap的是哪一段，只有1段的情 况，index为0。采用Device Tree后，大量的设备驱动通过of_iomap()进行映射，而不再通过传统的ioremap。
+ 通过设 备结点直接进行设备内存区间的 ioremap()，index是内存段的索引。若设备结点的reg属性有多段，
+ 可通过index标示要ioremap的是哪一段，只有1段的情 况，index为0。采用Device Tree后，
+ 大量的设备驱动通过of_iomap()进行映射，而不再通过传统的ioremap。
  
  
