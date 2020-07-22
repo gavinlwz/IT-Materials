@@ -19,6 +19,38 @@ T或t  ：代码段的数据，.test段
 U     ：符号未定义
 W或w  ：符号为弱符号，当系统有定义符号时，使用定义符号，当系统未定义符号且定义了弱符号时，使用弱符号。
 ？    ：unknown符号
+
+用nm打印程序符号，用grep过滤出需要统计的符号，最后用awk统计过滤后的符号总大小。如果统计的符号是函数，那么可以分析ROM的使用情况，如果统计的符号是数据，那么可以分析RAM的使用情况。
+
+mingdu.zheng at gmail dot com
+http://blog.csdn.net/zoomdy/article/details/79422358
+
+首先打印程序的所有符号，打印符号时要把符号占用的空间也打印出来，将结果保存到文件。
+
+arm-none-eabi-nm -l -S -t d --size-sort app.elf > symbols.1
+
+-l：打印符号对应的源文件和行号，通过过滤源文件路径可以分离不同模块的符号
+-S：打印符号占用的存储空间
+-t d：以十进制打印结果
+--size-sort：以符号大小排序，方便找到最占空间的那个
+1
+2
+3
+4
+5
+6
+然后按照程序模块的命名特征或源代码路径过滤出需要的符号，例如某个模块的函数名以nb_作为前缀，下面的例子会过滤出包含nb_的符号。
+
+grep -E "nb_" symbols.1 > symbols.2
+1
+接着过滤符号类型，t和T是函数，d和D是有初始值的数据，b和B是初始值为0的数据，下面的例子过滤出所有的函数。
+
+grep -E " [tT] " symbols.2 > symbols.3
+1
+最后统计符号占用的总空间。
+
+awk 'BEGIN{size=0;}{size=size+$2;}END{print "total size:", size;}' symbols.3
+
 ----------------------------------------------------------------------------
 
 nm --print-size --line-numbers --size-sort app.elf | grep " [dDbB] "
