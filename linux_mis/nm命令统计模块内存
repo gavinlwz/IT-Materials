@@ -5,6 +5,20 @@ arm-none-eabi-nm -l -S -t d --size-sort app.elf > symbols.1
 -S：打印符号占用的存储空间
 -t d：以十进制打印结果
 --size-sort：以符号大小排序，方便找到最占空间的那个
+
+A     ：符号的值是绝对值，不会被更改
+B或b  ：未被初始化的全局数据，放在.bss段
+D或d  ：已经初始化的全局数据
+G或g  ：指被初始化的数据，特指small objects
+I     ：另一个符号的间接参考
+N     ：debugging 符号
+p     ：位于堆栈展开部分
+R或r  ：属于只读存储区
+S或s  ：指为初始化的全局数据，特指small objects
+T或t  ：代码段的数据，.test段
+U     ：符号未定义
+W或w  ：符号为弱符号，当系统有定义符号时，使用定义符号，当系统未定义符号且定义了弱符号时，使用弱符号。
+？    ：unknown符号
 ----------------------------------------------------------------------------
 
 nm --print-size --line-numbers --size-sort app.elf | grep " [dDbB] "
