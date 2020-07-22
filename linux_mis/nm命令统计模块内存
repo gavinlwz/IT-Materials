@@ -1,0 +1,116 @@
+使用nm分析库或应用的内存使用情况：
+arm-none-eabi-nm -l -S -t d --size-sort app.elf > symbols.1
+
+-l：打印符号对应的源文件和行号，通过过滤源文件路径可以分离不同模块的符号
+-S：打印符号占用的存储空间
+-t d：以十进制打印结果
+--size-sort：以符号大小排序，方便找到最占空间的那个
+----------------------------------------------------------------------------
+
+nm --print-size --line-numbers --size-sort app.elf | grep " [dDbB] "
+
+--print-size：打印符号符号占用内存量；--line-numbers：打印符号所在的源文件名及行号；--size-sort：以符号占用内存量来排序；app.elf：eCos应用映像文件名。输出内容按列分别为：符号地址、符号占用内存量、符号类型、所在文件及行号。grep的作用是过滤不需要的符号，我们这里仅需要存储在RAM中的变量，将常量和函数等过滤掉，注意grep参数的引号和方括号之间有空格。输出结果按照变量内容占用量排序输出，最后输出的是占用量最大的变量。从上面的输出可以看出memp_memory占用的内存最多，通过文件名可以判断这是lwIP内存池，修改lwIP配置减少连接数和缓存数目等可以减少该变量的内存占用量。
+
+链接失败时的办法
+如果容量超限，压根就不能编译完成，也就谈不上映像文件了，这时候可以修改target.ld文件，修改内存容量，内存容量可以修改成比目标机实际容量更大的值，修改target.ld的目的是可以正确地生成映像文件然后使用nm来分析内存使用情况并进行调整，而不是下载到目标机运行，如果target.ld设定的内存容量比目标机实际内存容量大，即使下载到目标机也不能正常运行。根据nm输出结果及应用需求调整内存使用量，当映像使用的内存容量小于目标机实际内存容量后，恢复target.ld的内存容量设置。
+
+使用size查看总内存量
+nm打印出每个符号占用的内存量，而size打印映像的总内存量，可以使用size输出快速判断容量是否超限的问题，size还可以显示srec和ihex格式的映像容量。
+
+$ size app.elf
+   text    data     bss     dec     hex filename
+ 158712    1852   43503  204067   31d23 app.elf
+使用哪个nm？
+nm和size只是对ELF格式的映像文件符号和加载段进行分析，因此跟硬件架构没多大关系，使用nm或arm-eabi-nm的效果是一样的，如果不放心，那就用arm-eabi-nm吧，size同理。
+
+nm常用参数
+-C, --demangle 
+逆向解析C++符号转换，编译C++源代码时，会将C++符号转换成符号汇编器要求的符号，如果不对C++符号进行逆向解析，那么看到的是汇编符号而不是C++源文件中的符号名。
+
+使用该参数前，输出汇编符号，晦涩难懂
+
+$ arm-eabi-nm app.elf
+......
+00006adc T _ZN10Cyg_Thread5delayEy
+......
+使用该参数后，输出C++符号，与源文件符号一致
+
+$ arm-eabi-nm -C app.elf
+......
+00006adc T Cyg_Thread::delay(unsigned long long)
+......
+-l, --line-numbers
+输出符号所在的文件名和行号。
+
+使用该参数前
+
+$ arm-eabi-nm app.elf
+......
+0001a0c4 T write
+使用该参数后，行尾追加文件名和行号
+
+$ arm-eabi-nm -l app.elf
+......
+0001a0c4 T write        /cygdrive/f/ecos/hg/packages/io/fileio/current/src/io.cxx:169
+-S, --print-size
+输出符号占用内存量。
+
+使用该参数前
+
+$ arm-eabi-nm app.elf
+......
+0001a0c4 T write
+使用该参数后，第2列数字为符号占用内存量
+
+$ arm-eabi-nm -S app.elf
+......
+0001a0c4 00000034 T write
+-n, --numeric-sort
+输出结果按照符号地址排序。
+
+使用该参数前
+
+$ arm-eabi-nm app.elf
+......
+000202c8 T udp_sendto_if
+00018ec0 t update_arp_entry
+10004154 b var_data
+1000497c b var_handle
+10004954 b var_mempool
+00009a60 T vfnprintf
+0001a0c4 T write
+使用该参数后，根据第1列数值排序
+
+$ arm-eabi-nm -n app.elf
+......
+100070b0 A __heap1
+10007fe0 A hal_startup_stack
+2007c000 A __ahb_sram0_start
+2007c000 b emac_ahb_ram
+2007d8b8 A __ahb_sram0_end
+20080000 A __ahb_sram1_start
+20080000 b ram_heap
+20080388 b memp_memory
+20082bc3 A __ahb_sram1_end
+--size-sort
+按照内存使用量排序。
+
+使用该参数前
+
+$ arm-eabi-nm -S app.elf
+......
+10004154 00000800 b var_data
+1000497c 00000004 b var_handle
+10004954 00000028 b var_mempool
+00009a60 000015f4 T vfnprintf
+0001a0c4 00000034 T write
+使用该参数后，根据第2列数值进行排序
+
+$ arm-eabi-nm -S --size-sort app.elf
+......
+10001f98 00001000 b _ZL10main_stack
+0001cf38 000011dc t tcp_receive
+00009a60 000015f4 T vfnprintf
+10004994 00001800 b stack_data
+2007c000 000018b8 b emac_ahb_ram
+20080388 0000283b b memp_memory
