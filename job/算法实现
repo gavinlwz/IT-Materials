@@ -28,6 +28,17 @@ int binary_search(int *array, int data, int len)
 	}
 	return -1;
 }
+7大经典排序
+一.交换排序
+1.冒泡排序
+2.快速排序
+二.插入排序
+1.直接插入排序
+2.希尔(shell)排序
+三.选择排序
+1.直接选择排序
+2.堆(Heap)排序
+四.归并排序
 
 /*
 * 冒泡排序
