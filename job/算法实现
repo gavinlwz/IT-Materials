@@ -28,3 +28,28 @@ int binary_search(int *array, int data, int len)
 	}
 	return -1;
 }
+
+/*
+* 冒泡排序
+* 每次相邻两个数比较,若升序,则将大的数放到后面,一次循环过后，就会将最大的数放在最后.
+* 如图9 3 2 5 8 4 7 6是输入的待排序的数列,经过第一次排序,将最大的9放在最后,
+* 第二次排序,将剩下的2 3 5 4 7 6 8进行冒泡,将当前最大的8放在倒数第二的位置,以此类推
+*/
+int * bubble_sort(int data[], int len)
+{
+	int tmp;
+	int i,j,k;
+	for(j=len-1; j>=0; j--)
+	{
+		for(i=0; i<j; i++)
+		{
+			if(data[i] > data[i+1])
+			{
+				tmp = data[i+1];
+				data[i+1] = data[i];
+				data[i] = tmp;
+			}
+		}
+	}
+	return data;
+}
