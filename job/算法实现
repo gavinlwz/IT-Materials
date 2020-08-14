@@ -64,3 +64,100 @@ int * bubble_sort(int data[], int len)
 	}
 	return data;
 }
+
+/*
+* 快速排序
+* 快速排序所采用的思想是分治的思想。
+* 所谓分治，就是指以一个数为基准，将序列中的其他数往它两边“扔”。
+* 以从小到大排序为例，比它小的都“扔”到它的左边，比它大的都“扔”到它的右边，
+* 然后左右两边再分别重复这个操作，不停地分，直至分到每一个分区的基准数的左边或者右边都只剩一个数为止。
+* 这时排序也就完成了。
+* 每次必须是基准参考对侧（另外一侧）的哨兵先出发。
+*/
+/*
+快速排序的三个步骤：
+
+(1)选择基准：在待排序列中，按照某种方式挑出一个元素，作为 "基准"（pivot）
+
+(2)分割操作：以该基准在序列中的实际位置，把序列分成两个子序列。此时，在基准左边的元素都比该基准小，在基准右边的元素都比基准大
+
+(3)递归地对两个序列进行快速排序，直到序列为空或者只有一个元素
+*/
+void quick_sort(int *data, int left, int right)
+{
+	int tmp;
+	int i,j;
+	if(left >= right) {
+		return;
+	}
+	i = left;
+	j = right;
+	tmp = data[left];
+	while(left < right)
+	{
+		while(left < right)
+		{
+			if(data[right] < tmp)
+			{
+				break;
+			}
+			right--;
+		}
+		data[left] = data[right];
+		while(left < right)
+		{
+			if(data[left] > tmp)
+			{
+				break;
+			}
+			left++;
+		}
+		data[right] = data[left];
+	}
+	data[left] = tmp;
+	quick_sort(data, i, left-1);
+	quick_sort(data, left+1, j);
+}
+
+/*
+* 插入排序
+* 在一个有序的数组中为要插入的元素找到指定的插入位置，
+* 但这个位置并不一定是最后排序结果中对应元素的最终位置。
+* 开始用第一个元素作为有序的序列
+*/
+void insert_sort(int *data, int len)
+{
+	int i,j;
+	int tmp;
+	for(i=1; i<len; i++)
+	{
+		tmp = data[i];
+		j = i - 1;
+		while(j>=0 && tmp < data[j])
+		{
+			data[j+1] = data[j];
+			j--;
+		}
+		data[j+1] = tmp;
+	}
+}
+
+void reversal(char *data)
+{
+	char tmp;
+	char *pend = data;
+	char *pcur = data;
+	while( 0 != *pend)
+	{
+		pend++;
+	}
+	pend--;
+	while(pend > pcur)
+	{
+		tmp = *pcur;
+		*pcur = *pend;
+		*pend = tmp;
+		pend--;
+		pcur++;
+	}
+}
