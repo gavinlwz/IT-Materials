@@ -1,0 +1,9 @@
+docker run --rm -d -u $UID --name jenkins --privileged=true -p 8080:8080 -p 50000:50000 \
+           --env JAVA_OPTS="-Dmail.smtp.starttls.enable=true \
+                            -Dhudson.tasks.MailSender.SEND_TO_UNKNOWN_USERS=true \
+                            -Duser.timezone=Asia/Shanghai" \
+           -v /home/unisound/jenkins-home:/var/jenkins_home  \
+           -v /home/$USER/.ssh:/home/$USER/.ssh  \
+           -v /etc/localtime:/etc/localtime  \
+           -v /etc/timezone:/etc/timezone  \
+           jenkins:2.60.3
