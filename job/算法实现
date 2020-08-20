@@ -142,6 +142,9 @@ void insert_sort(int *data, int len)
 	}
 }
 
+/*
+*字符串反转
+*/
 void reversal(char *data)
 {
 	char tmp;
@@ -161,3 +164,11 @@ void reversal(char *data)
 		pcur++;
 	}
 }
+
+/*
+*宏定义交互两个数
+*/
+#define SWAP(a,b) {a=a^b;b=b^a;a=a^b;}
+#define SWAP(a,b,temp) {temp=a;a=b;b=temp;}
+#define SWAP(a,b) {a=b-a;b=b-a;a=a+b;}
+
