@@ -5,29 +5,59 @@
 /*
 *二叉查找算法
 */
-int binary_search(int *array, int data, int len)
+//right bound
+int binary_search(int datas[], int len, int target)
 {
-	int left = 0;
-	int right = len - 1;
-	int mid;
-	while(left <= right)
-	{
-		mid = (right + left) / 2;
-		if (data < array[mid])
-		{
-			right = mid - 1;
-		}
-		else if (data > array[mid])
-		{
-			left = mid + 1;
-		}
-		else
-		{
-			return mid;
-		}
-	}
-	return -1;
+    int left = 0;
+    int right = len -1;
+    int mid;
+    while( left <= right)
+    {
+        mid = (left + right) / 2;
+        if (datas[mid] > target)
+        {
+            right = mid - 1;
+        }
+        else if (target == datas[mid])
+        {
+            return mid;
+        }
+        else
+        {
+            left = mid +1;
+        }
+    }
+    return -1;
 }
+
+int binary_search_left_bound(int datas[], int len, int target)
+{
+    int left = 0;
+    int right = len -1;
+    int mid;
+    while( left <= right)
+    {
+        mid = (left + right) / 2;
+        if (datas[mid] > target)
+        {
+            right = mid - 1;
+        }
+        else if (target == datas[mid])
+        {
+            right = mid - 1;
+        }
+        else
+        {
+            left = mid +1;
+        }
+    }
+    if (left < len && target == datas[left])
+    {
+        return left;
+    }
+    return -1;
+}
+
 7大经典排序
 一.交换排序
 1.冒泡排序
